@@ -5,8 +5,7 @@
  * ----------------------------------------------------------------------
  * Arquivo   : particulateLoad.js
  * Módulo    : Metrics
- * Versão    : 1.0.0
- * Status    : RC1 - CONGELADO
+ * Versão    : RC1 - CONGELADO
  *
  * Objetivo
  * ----------------------------------------------------------------------
@@ -25,6 +24,26 @@
  * ======================================================================
  */
 
+// ======================================================================
+// Validação de disponibilidade
+// ======================================================================
+
+function isEvaluated(validation) {
+
+    return (
+        validation &&
+        validation.state !== "MISSING" &&
+        validation.value !== null &&
+        validation.value !== undefined
+    );
+
+}
+
+
+// ======================================================================
+// CALCULATOR
+// ======================================================================
+
 export function calculateParticulateLoad(ctx) {
 
     const validation =
@@ -37,10 +56,15 @@ export function calculateParticulateLoad(ctx) {
         validation.pm10;
 
     /*
-     * Nenhum parâmetro disponível
+     * Nenhum parâmetro efetivamente disponível.
+     *
+     * MISSING não representa falha ambiental.
      */
 
-    if (!pm25 && !pm10) {
+    if (
+        !isEvaluated(pm25) &&
+        !isEvaluated(pm10)
+    ) {
 
         return {
 
@@ -64,7 +88,10 @@ export function calculateParticulateLoad(ctx) {
      * PM2.5
      */
 
-    if (pm25 && !pm25.passed) {
+    if (
+        isEvaluated(pm25) &&
+        !pm25.passed
+    ) {
 
         score -= 60;
 
@@ -74,7 +101,10 @@ export function calculateParticulateLoad(ctx) {
      * PM10
      */
 
-    if (pm10 && !pm10.passed) {
+    if (
+        isEvaluated(pm10) &&
+        !pm10.passed
+    ) {
 
         score -= 40;
 
@@ -125,13 +155,19 @@ export function calculateParticulateLoad(ctx) {
 
     let dominantFactor = null;
 
-    if (pm25 && !pm25.passed) {
+    if (
+        isEvaluated(pm25) &&
+        !pm25.passed
+    ) {
 
         dominantFactor = "pm25";
 
     }
 
-    else if (pm10 && !pm10.passed) {
+    else if (
+        isEvaluated(pm10) &&
+        !pm10.passed
+    ) {
 
         dominantFactor = "pm10";
 

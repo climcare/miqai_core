@@ -58,8 +58,7 @@ const ELEVATED_CO2 = Object.freeze({
 
         "ashrae62_1",
 
-        "abnt_nbr_16401",
-
+        "abnt_nbr_16401"
 
     ],
 
@@ -75,12 +74,18 @@ const ELEVATED_CO2 = Object.freeze({
 
     when(ctx) {
 
+        const co2 =
+            ctx.validation?.co2;
+
+        const co2Evaluated =
+            co2 &&
+            co2.state !== "MISSING" &&
+            co2.value !== null &&
+            co2.value !== undefined;
+
         return (
-
-            ctx.validation.co2 &&
-
-            !ctx.validation.co2.passed
-
+            co2Evaluated &&
+            co2.passed === false
         );
 
     }

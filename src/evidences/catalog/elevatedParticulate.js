@@ -80,15 +80,31 @@ const ELEVATED_PARTICULATE = Object.freeze({
 
     when(ctx) {
 
+        const pm25 =
+            ctx.validation?.pm25;
+
+        const pm10 =
+            ctx.validation?.pm10;
+
+        const pm25Evaluated =
+            pm25 &&
+            pm25.state !== "MISSING" &&
+            pm25.value !== null &&
+            pm25.value !== undefined;
+
+        const pm10Evaluated =
+            pm10 &&
+            pm10.state !== "MISSING" &&
+            pm10.value !== null &&
+            pm10.value !== undefined;
+
         return (
 
-            (ctx.validation.pm25 &&
-             !ctx.validation.pm25.passed)
+            (pm25Evaluated && pm25.passed === false)
 
             ||
 
-            (ctx.validation.pm10 &&
-             !ctx.validation.pm10.passed)
+            (pm10Evaluated && pm10.passed === false)
 
         );
 

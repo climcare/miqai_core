@@ -28,6 +28,25 @@
 
 import { resolveScoreLevel } from "../utils/scoreLevel.js";
 
+/* ======================================================================
+ * VALIDAÇÃO DE DISPONIBILIDADE
+ * ====================================================================== */
+
+function isEvaluated(validation) {
+
+    return (
+        validation &&
+        validation.state !== "MISSING" &&
+        validation.value !== null &&
+        validation.value !== undefined
+    );
+
+}
+
+/* ======================================================================
+ * HEALTH RISK
+ * ====================================================================== */
+
 export function calculateHealthRisk(ctx) {
 
     const validation = ctx.validation || {};
@@ -66,29 +85,68 @@ export function calculateHealthRisk(ctx) {
 
     ];
 
+    /*
+     * Somente parâmetros efetivamente avaliados
+     * participam do cálculo.
+     */
+
+    const evaluatedFactors =
+        factors.filter(
+            factor =>
+                isEvaluated(factor.result)
+        );
+
+    /*
+     * Nenhum parâmetro disponível.
+     *
+     * Sem dados não é possível classificar
+     * o risco potencial à saúde.
+     */
+
+    if (evaluatedFactors.length === 0) {
+
+        return {
+
+            score: null,
+
+            level: "UNKNOWN",
+
+            dominantFactor: null
+
+        };
+
+    }
+
+    /*
+     * Pontuação inicial.
+     */
+
     let score = 100;
 
     let dominantFactor = null;
 
     let highestPenalty = 0;
 
-    for (const factor of factors) {
+    /*
+     * Aplicação das penalizações.
+     */
 
-        if (!factor.result) {
+    for (const factor of evaluatedFactors) {
 
-            continue;
-
-        }
-
-        if (!factor.result.passed) {
+        if (factor.result.passed === false) {
 
             score -= factor.penalty;
 
-            if (factor.penalty > highestPenalty) {
+            if (
+                factor.penalty >
+                highestPenalty
+            ) {
 
-                highestPenalty = factor.penalty;
+                highestPenalty =
+                    factor.penalty;
 
-                dominantFactor = factor.name;
+                dominantFactor =
+                    factor.name;
 
             }
 
@@ -96,16 +154,28 @@ export function calculateHealthRisk(ctx) {
 
     }
 
+    /*
+     * Limites.
+     */
+
     score = Math.max(
         0,
-        Math.min(100, score)
+        Math.min(
+            100,
+            score
+        )
     );
+
+    /*
+     * Resultado.
+     */
 
     return {
 
         score,
 
-        level: resolveScoreLevel(score),
+        level:
+            resolveScoreLevel(score),
 
         dominantFactor
 

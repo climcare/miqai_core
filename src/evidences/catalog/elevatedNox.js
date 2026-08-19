@@ -72,13 +72,25 @@ const ELEVATED_NOX = Object.freeze({
 
     when(ctx) {
 
-        return (
+    const validation =
+        ctx.validation?.noxIndex;
 
-            ctx.validation.noxIndex &&
+    if (!validation) {
 
-            !ctx.validation.noxIndex.passed
+        return false;
 
-        );
+    }
+
+    if (
+        validation.value === null ||
+        validation.value === undefined
+    ) {
+
+        return false;
+
+    }
+
+    return validation.passed === false;
 
     }
 

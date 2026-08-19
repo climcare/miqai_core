@@ -26,6 +26,25 @@
  * ======================================================================
  */
 
+/* ======================================================================
+ * VALIDAÇÃO DE DISPONIBILIDADE
+ * ====================================================================== */
+
+function isEvaluated(validation) {
+
+    return (
+        validation &&
+        validation.state !== "MISSING" &&
+        validation.value !== null &&
+        validation.value !== undefined
+    );
+
+}
+
+/* ======================================================================
+ * THERMAL COMFORT
+ * ====================================================================== */
+
 export function calculateThermalComfort(ctx) {
 
     const validation =
@@ -41,7 +60,10 @@ export function calculateThermalComfort(ctx) {
      * Leituras ausentes
      */
 
-    if (!temperature || !humidity) {
+    if (
+        !isEvaluated(temperature) ||
+        !isEvaluated(humidity)
+    ) {
 
         return {
 

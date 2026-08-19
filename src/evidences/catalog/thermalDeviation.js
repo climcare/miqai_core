@@ -82,15 +82,33 @@ const THERMAL_DEVIATION = Object.freeze({
 
     when(ctx) {
 
+        const temperature =
+            ctx.validation?.temperature;
+
+        const humidity =
+            ctx.validation?.humidity;
+
+        const temperatureEvaluated =
+            temperature &&
+            temperature.state !== "MISSING" &&
+            temperature.value !== null &&
+            temperature.value !== undefined;
+
+        const humidityEvaluated =
+            humidity &&
+            humidity.state !== "MISSING" &&
+            humidity.value !== null &&
+            humidity.value !== undefined;
+
         return (
 
-            (ctx.validation.temperature &&
-             !ctx.validation.temperature.passed)
+            (temperatureEvaluated &&
+             temperature.passed === false)
 
             ||
 
-            (ctx.validation.humidity &&
-             !ctx.validation.humidity.passed)
+            (humidityEvaluated &&
+             humidity.passed === false)
 
         );
 

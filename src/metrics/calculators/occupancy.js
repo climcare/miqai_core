@@ -29,6 +29,22 @@
  * ======================================================================
  */
 
+// ======================================================================
+// Validação de disponibilidade
+// ======================================================================
+
+function isEvaluated(validation) {
+
+    return (
+        validation &&
+        validation.state !== "MISSING" &&
+        validation.value !== null &&
+        validation.value !== undefined
+    );
+
+}
+
+
 export function calculateOccupancy(ctx) {
 
     const validation = ctx.validation;
@@ -36,10 +52,10 @@ export function calculateOccupancy(ctx) {
     const co2 = validation.co2;
 
     /*
-     * Sem CO₂ não é possível estimar ocupação.
+     * Sem CO₂ disponível não é possível estimar ocupação.
      */
 
-    if (!co2) {
+    if (!isEvaluated(co2)) {
 
         return {
 

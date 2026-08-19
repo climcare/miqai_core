@@ -27,6 +27,23 @@
 
 import { resolveScoreLevel } from "../utils/scoreLevel.js";
 
+
+// ======================================================================
+// Validação de disponibilidade
+// ======================================================================
+
+function isEvaluated(validation) {
+
+    return (
+        validation &&
+        validation.state !== "MISSING" &&
+        validation.value !== null &&
+        validation.value !== undefined
+    );
+
+}
+
+
 export function calculateAirQuality(ctx) {
 
     const validation = ctx.validation;
@@ -39,7 +56,11 @@ export function calculateAirQuality(ctx) {
      * Nenhum parâmetro disponível
      */
 
-    if (!co2 && !voc && !nox) {
+    if (
+        !isEvaluated(co2) &&
+        !isEvaluated(voc) &&
+        !isEvaluated(nox)
+    ) {
 
         return {
 
@@ -63,7 +84,10 @@ export function calculateAirQuality(ctx) {
      * CO₂
      */
 
-    if (co2 && !co2.passed) {
+    if (
+        isEvaluated(co2) &&
+        !co2.passed
+    ) {
 
         score -= 40;
 
@@ -73,7 +97,10 @@ export function calculateAirQuality(ctx) {
      * VOC
      */
 
-    if (voc && !voc.passed) {
+    if (
+        isEvaluated(voc) &&
+        !voc.passed
+    ) {
 
         score -= 30;
 
@@ -83,7 +110,10 @@ export function calculateAirQuality(ctx) {
      * NOx
      */
 
-    if (nox && !nox.passed) {
+    if (
+        isEvaluated(nox) &&
+        !nox.passed
+    ) {
 
         score -= 30;
 
@@ -111,19 +141,28 @@ export function calculateAirQuality(ctx) {
 
     let dominantFactor = null;
 
-    if (co2 && !co2.passed) {
+    if (
+        isEvaluated(co2) &&
+        !co2.passed
+    ) {
 
         dominantFactor = "co2";
 
     }
 
-    else if (voc && !voc.passed) {
+    else if (
+        isEvaluated(voc) &&
+        !voc.passed
+    ) {
 
         dominantFactor = "vocIndex";
 
     }
 
-    else if (nox && !nox.passed) {
+    else if (
+        isEvaluated(nox) &&
+        !nox.passed
+    ) {
 
         dominantFactor = "noxIndex";
 

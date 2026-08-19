@@ -14,17 +14,19 @@ export default Object.freeze({
 
     id: "highOccupancy",
 
-    title: "Ocupação elevada",
+    title:
+        "Possível influência de ocupação elevada",
 
     description:
-        "Foi observada elevada ocupação estimada para o ambiente.",
+        "O comportamento observado do CO₂ é compatível com possível influência da ocupação sobre a qualidade do ar. A ocupação efetiva deve ser confirmada por observação ou informação operacional do ambiente.",
 
     priority: 65,
 
     when(ctx) {
 
         return (
-            ctx.metrics?.occupancy?.level === "HIGH"
+            ctx.metrics?.occupancy?.level === "HIGH" ||
+            ctx.metrics?.occupancy?.level === "VERY_HIGH"
         );
 
     }

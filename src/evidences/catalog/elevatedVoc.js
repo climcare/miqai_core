@@ -72,13 +72,25 @@ const ELEVATED_VOC = Object.freeze({
 
     when(ctx) {
 
-        return (
+    const validation =
+        ctx.validation?.vocIndex;
 
-            ctx.validation.vocIndex &&
+    if (!validation) {
 
-            !ctx.validation.vocIndex.passed
+        return false;
 
-        );
+    }
+
+    if (
+        validation.value === null ||
+        validation.value === undefined
+    ) {
+
+        return false;
+
+    }
+
+    return validation.passed === false;
 
     }
 

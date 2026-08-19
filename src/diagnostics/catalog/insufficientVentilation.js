@@ -10,18 +10,19 @@
  *
  * Objetivo
  * ----------------------------------------------------------------------
- * Identificar ambientes com indícios de ventilação insuficiente.
+ * Identificar condições ambientais compatíveis com possível renovação
+ * insuficiente do ar.
  *
- * Este diagnóstico representa exclusivamente uma classificação técnica
- * baseada nas informações produzidas pela Validation Engine e pelo
- * Metrics Engine.
+ * Este diagnóstico representa uma condição técnica compatível
+ * com possível renovação insuficiente do ar, sem estabelecer
+ * relação causal.
  *
+ * Não confirma insuficiência de ventilação.
  * Não identifica causas.
  * Não confirma falhas em sistemas HVAC.
  * Não interpreta normas.
  * Não gera evidências.
- * Não produz hipóteses.
- * Não recomenda mitigações.
+ * Não produz recomendações de mitigação.
  * ======================================================================
  */
 
@@ -29,64 +30,45 @@ const INSUFFICIENT_VENTILATION = Object.freeze({
 
     id: "insufficient_ventilation",
 
-    name: "Ventilação Insuficiente",
+    name:
+        "Possível renovação insuficiente do ar",
 
     priority: 100,
 
     when(ctx) {
 
-        const validation = ctx.validation ?? {};
-        const metrics = ctx.metrics ?? {};
+        const validation =
+            ctx.validation ?? {};
+
+        const co2 =
+            validation.co2;
 
         /*
-         * Evidência proveniente da Validation:
-         * concentração de CO₂ fora da faixa regulatória.
+         * O CO₂ somente pode participar da análise quando existe
+         * uma leitura efetivamente disponível.
          */
 
         if (
-            validation.co2 &&
-            !validation.co2.passed
+            !co2 ||
+            co2.state === "MISSING" ||
+            co2.value === null ||
+            co2.value === undefined
         ) {
 
-            return true;
+            return false;
 
         }
 
         /*
-         * Evidência proveniente das Metrics:
-         * ocupação estimada elevada.
+         * Condição ambiental compatível com possível renovação
+         * insuficiente do ar.
+         *
+         * A condição não representa confirmação causal.
          */
 
-        if (
-            metrics.occupancy &&
-            (
-                metrics.occupancy.level === "HIGH" ||
-                metrics.occupancy.level === "VERY_HIGH"
-            )
-        ) {
-
-            return true;
-
-        }
-
-        /*
-         * Evidência proveniente das Metrics:
-         * qualidade geral do ar comprometida.
-         */
-
-        if (
-            metrics.airQuality &&
-            (
-                metrics.airQuality.level === "MODERATE" ||
-                metrics.airQuality.level === "POOR"
-            )
-        ) {
-
-            return true;
-
-        }
-
-        return false;
+        return (
+            co2.state === "HIGH"
+        );
 
     }
 
